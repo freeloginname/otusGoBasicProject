@@ -1,0 +1,86 @@
+{{ define "notes_get_note.tmpl" }}
+<!DOCTYPE html>
+<html>
+    <body>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title> {{ .title }} </title>
+        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="/../css/styles.css" rel="stylesheet" />
+    </head>
+    {{ template "header.tmpl" .}}
+        <header class="bg-primary bg-gradient text-white">
+        <div class="container px-4 text-center">
+            <h1 class="fw-bolder">Персональные заметки {{ .user_name}} </h1>
+        </div>
+    </header>
+        <section id="about">
+            <div class="container px-4">
+                <div class="row gx-4 justify-content-center">
+                    <div class="col-lg-8">
+                            <h2> {{ .Note.Name }} </h2>
+                            <div id="edit" class="lead" contenteditable="false">
+                                <textarea id="text" class="lead" type="text" readonly>{{ .Note.Text }}</textarea>
+                            </div>
+                            <ul>
+                                <li><button id="editbtn" class="btn btn-lg btn-light" onclick="edit( {{ .Note.Name }} )" value="Редактировать">Редактировать</button></li>
+                                <li><button class="btn btn-lg btn-light" onclick="deleteMe( {{ .Note.Name }} )">Удалить</button></li>
+                            </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+        {{ template "footer.tmpl" .}}
+        <script src="/../../js/scripts.js"></script>
+        <script type="text/javascript">
+            function deleteMe(name) {
+                fetch('/notes/' + name,  {
+                    method: 'DELETE'
+                })
+                window.location.replace('/notes/');
+            }
+        </script>
+        <script type="text/javascript">
+            function edit(name)
+            {
+                var div = document.getElementById ("edit");
+                var button = document.getElementById ("editbtn");
+                var content_div = document.getElementById ("ListContent");
+                var textarea = document.getElementById ("text");
+
+                if (div.contentEditable == "true")
+                {
+                    div.contentEditable = "false";
+
+                    
+                    // textarea.innerHTML = div.innerHTML;
+                    button.value = "Редактировать";
+                    button.innerHTML = "Редактировать";
+                    var currentText = textarea.value;
+                    var body = JSON.stringify({ text: currentText });
+                    console.log(body);
+                    fetch('/notes/' + name,  {
+                        method: 'PUT',
+                        body: body,
+                    })
+                    textarea.setAttribute('readonly', "");
+                    // window.location.replace('/notes/' + name);
+                }
+
+                else
+                {
+                    div.contentEditable = "true";
+                    textarea.removeAttribute('readonly');
+                    // document.getElementById("text").readOnly = "false";
+                    button.value = "Сохранить";
+                    button.innerHTML = "Сохранить";
+                }
+            }
+        </script>
+    </body>
+</html>
+{{ end }}

@@ -1,0 +1,48 @@
+{{ define "index.tmpl" }}
+<!DOCTYPE html>
+<html lang="en">
+    <body id="page-top">
+        <head>
+            <meta charset="utf-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+            <meta name="description" content="" />
+            <meta name="author" content="" />
+            <title> {{ .title }} </title>
+            <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+            <!-- Core theme CSS (includes Bootstrap)-->
+            <link href="css/styles.css" rel="stylesheet" />
+        </head>
+        {{ template "header.tmpl" .}}
+        <!-- Header-->
+        <header class="bg-primary bg-gradient text-white">
+            <div class="container px-4 text-center">
+                <h1 class="fw-bolder">Персональные заметки</h1>
+                <p class="lead">Для начала работы войдите или зарегистрируйтесь</p>
+                <a class="btn btn-lg btn-light" href="/ui/login">Вход</a>
+                <a class="btn btn-lg btn-light" href="/ui/create_user_form">Регистрация</a>
+            </div>
+        </header>
+        <!-- About section-->
+        <section id="about">
+            <div class="container px-4">
+                <div class="row gx-4 justify-content-center">
+                    <div class="col-lg-8">
+                        <h2>О сервисе</h2>
+                        <p class="lead">Ресурс позволяет вести персональные заметки и обеспечивает:</p>
+                        <ul>
+                            <li>Создавать, просматривать, обновлять и удалять заметки</li>
+                            <li>Заметки сохраняются в базе данных, чтобы они были доступны между сессиями</li>
+                            <li>Реализована аутентификация пользователей, чтобы каждый пользователь видел только свои заметки</li>
+                            <li>Применены шаблоны HTML для отображения пользовательского интерфейса</li>
+                            <li>Реализована обработка ошибок и валидация пользовательского ввода, чтобы предотвратить некорректные данные</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Footer-->
+        {{ template "footer.tmpl" .}}
+        <script src="js/scripts.js"></script>
+    </body>
+</html>
+{{ end }}

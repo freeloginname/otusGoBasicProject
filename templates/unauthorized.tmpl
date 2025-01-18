@@ -1,0 +1,31 @@
+{{ define "unauthorized.tmpl" }}
+<!DOCTYPE html>
+<html lang="en">
+    <body id="page-top">
+        <head>
+            <meta charset="utf-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+            <meta name="description" content="" />
+            <meta name="author" content="" />
+            <title> {{ .title }} </title>
+            <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+            <!-- Core theme CSS (includes Bootstrap)-->
+            <link href="/css/styles.css" rel="stylesheet" />
+        </head>
+        {{ template "header.tmpl" .}}
+        <!-- Header-->
+        <header class="bg-primary bg-gradient text-white">
+            <div class="container px-4 text-center">
+                <h1 class="fw-bolder">Пользователь не авторизован</h1>
+                <p class="lead">Ошибка: {{ .error }} </p>
+                <p class="lead">Для начала работы войдите или зарегистрируйтесь</p>
+                <a class="btn btn-lg btn-light" href="/ui/login">Вход</a>
+                <a class="btn btn-lg btn-light" href="/ui/create_user_form">Регистрация</a>
+            </div>
+        </header>
+        <!-- Footer-->
+        {{ template "footer.tmpl" .}}
+        <script src="/js/scripts.js"></script>
+    </body>
+</html>
+{{ end }}
