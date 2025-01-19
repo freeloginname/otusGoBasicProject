@@ -20,6 +20,9 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v3
 
+      - name: Go mod tidy
+        run: go mod tidy
+
       - name: Linters
         uses: golangci/golangci-lint-action@v3
         with:
@@ -44,7 +47,7 @@ jobs:
         run: sudo apt-get install docker-compose -y
 
       - name: Start services with Docker Compose
-        run: docker compose up --build --file docker-compose-ci.yaml --force-recreate
+        run: docker compose up --build -f docker-compose-ci.yaml --force-recreate
 
       - name: Unit tests
         run: go test -race -count 100 -timeout=5m ./...

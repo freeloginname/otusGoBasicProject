@@ -273,36 +273,36 @@ func GetNoteByID(ctx context.Context, dbc *pgxpool.Pool, noteID string) (*notes.
 	return note, nil
 }
 
-func GetNote(ctx context.Context, dbc *pgxpool.Pool, userName string, noteName string) (*notes.Note, error) {
-	tx, err := dbc.BeginTx(ctx, pgx.TxOptions{IsoLevel: pgx.RepeatableRead})
-	if err != nil {
-		fmt.Printf("failed to start transaction: %v", err)
-		return &notes.Note{}, err
-	}
-	defer func() {
-		err = tx.Rollback(ctx)
-		if err != nil {
-			fmt.Printf("failed to rollback transaction: %v", err)
-		}
-	}()
+// func GetNote(ctx context.Context, dbc *pgxpool.Pool, userName string, noteName string) (*notes.Note, error) {
+// 	tx, err := dbc.BeginTx(ctx, pgx.TxOptions{IsoLevel: pgx.RepeatableRead})
+// 	if err != nil {
+// 		fmt.Printf("failed to start transaction: %v", err)
+// 		return &notes.Note{}, err
+// 	}
+// 	defer func() {
+// 		err = tx.Rollback(ctx)
+// 		if err != nil {
+// 			fmt.Printf("failed to rollback transaction: %v", err)
+// 		}
+// 	}()
 
-	requestor := notes.New(tx)
-	requestor.WithTx(tx)
-	user, err := requestor.GetUserByName(ctx, userName)
-	if err != nil {
-		fmt.Printf("failed to find user: %v", err)
-		return &notes.Note{}, err
-	}
-	note, err := requestor.GetUserNoteByName(ctx, notes.GetUserNoteByNameParams{
-		UserID: user.ID,
-		Name:   noteName,
-	})
-	if err != nil {
-		fmt.Printf("failed to get user note: %v", err)
-		return &notes.Note{}, err
-	}
-	return note, nil
-}
+// 	requestor := notes.New(tx)
+// 	requestor.WithTx(tx)
+// 	user, err := requestor.GetUserByName(ctx, userName)
+// 	if err != nil {
+// 		fmt.Printf("failed to find user: %v", err)
+// 		return &notes.Note{}, err
+// 	}
+// 	note, err := requestor.GetUserNoteByName(ctx, notes.GetUserNoteByNameParams{
+// 		UserID: user.ID,
+// 		Name:   noteName,
+// 	})
+// 	if err != nil {
+// 		fmt.Printf("failed to get user note: %v", err)
+// 		return &notes.Note{}, err
+// 	}
+// 	return note, nil
+// }
 
 func GetUserNoteByName(ctx context.Context, dbc *pgxpool.Pool, userName string, noteName string) (*notes.Note, error) {
 	tx, err := dbc.BeginTx(ctx, pgx.TxOptions{IsoLevel: pgx.RepeatableRead})
@@ -422,7 +422,7 @@ func DeleteUserNoteByName(ctx context.Context, dbc *pgxpool.Pool, userName strin
 	return nil
 }
 
-func DeleteNoteById(ctx context.Context, dbc *pgxpool.Pool, noteID string) error {
+func DeleteNoteByID(ctx context.Context, dbc *pgxpool.Pool, noteID string) error {
 	tx, err := dbc.BeginTx(ctx, pgx.TxOptions{IsoLevel: pgx.RepeatableRead})
 	if err != nil {
 		fmt.Printf("failed to start transaction: %v", err)

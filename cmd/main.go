@@ -25,7 +25,7 @@ var DSN string
 
 type connectionFunc func(context.Context, string, int32) (*pgxpool.Pool, error)
 
-func retry(attempts int, sleep time.Duration, f connectionFunc, ctx context.Context, dbDSN string, maxOpenConns int32) (h *pgxpool.Pool, err error) {
+func retry(ctx context.Context, attempts int, sleep time.Duration, f connectionFunc, dbDSN string, maxOpenConns int32) (h *pgxpool.Pool, err error) {
 	for i := 0; i < attempts; i++ {
 		if i > 0 {
 			log.Println("retrying after error:", err)
@@ -66,16 +66,16 @@ func main() {
 	}
 
 	port := viper.Get("APP_HTTP_PORT").(string)
-	dbUrl := viper.Get("DB_DSN").(string)
+	dbURL := viper.Get("DB_DSN").(string)
 	envMigrationDir := viper.Get("MIGRATION_DIR_DOTLESS").(string)
 	migrationDir := filepath.Join(curPath, envMigrationDir)
 
 	ctx := context.Background()
-	h, err := retry(5, 5*time.Second, pgdb.New, ctx, dbUrl, 20)
+	h, err := retry(ctx, 5, 5*time.Second, pgdb.New, dbURL, 20)
 	if err != nil {
 		panic(fmt.Errorf("failed to connect to DB: %w", err))
 	}
-	// h, err := pgdb.New(ctx, dbUrl, 20)
+	// h, err := pgdb.New(ctx, dbURL, 20)
 	// if err != nil {
 	// 	panic(fmt.Errorf("failed to connect to DB: %v", err))
 	// }
