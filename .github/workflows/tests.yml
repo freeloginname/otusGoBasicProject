@@ -41,6 +41,9 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v3
 
+      - name: Set up Docker Compose
+        run: sudo apt-get install docker-compose -y
+
       - name: Start services with Docker Compose
         run: docker-compose up -d --build --file docker-compose-ci.yaml
 
