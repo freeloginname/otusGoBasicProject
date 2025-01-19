@@ -11,13 +11,13 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type handler struct {
+type Handler struct {
 	DB        *pgxpool.Pool
 	SecretKey []byte
 }
 
 func RegisterRoutes(r *gin.Engine, db *pgxpool.Pool, secretKey []byte) {
-	h := &handler{
+	h := &Handler{
 		DB:        db,
 		SecretKey: secretKey,
 	}
@@ -28,7 +28,7 @@ func RegisterRoutes(r *gin.Engine, db *pgxpool.Pool, secretKey []byte) {
 	routes.GET("/", h.CheckAuth, h.GetUserProfile)
 }
 
-func (h handler) CheckAuth(c *gin.Context) {
+func (h Handler) CheckAuth(c *gin.Context) {
 
 	authHeader := c.GetHeader("Authorization")
 	var tokenString string

@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (h handler) GetUserProfile(c *gin.Context) {
+func (h Handler) GetUserProfile(c *gin.Context) {
 
 	user, _ := c.Get("currentUser")
 

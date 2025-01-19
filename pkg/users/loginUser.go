@@ -16,7 +16,7 @@ type LoginUserRequestBody struct {
 	Password string `json:"password"`
 }
 
-func (h handler) LoginUser(c *gin.Context) {
+func (h Handler) LoginUser(c *gin.Context) {
 	body := LoginUserRequestBody{}
 
 	// получаем тело запроса

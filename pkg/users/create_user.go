@@ -14,7 +14,7 @@ type CreateUserRequestBody struct {
 	Password string `json:"password"`
 }
 
-func (h handler) CreateUser(c *gin.Context) {
+func (h Handler) CreateUser(c *gin.Context) {
 	body := CreateUserRequestBody{}
 
 	// получаем тело запроса
