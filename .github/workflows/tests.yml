@@ -56,7 +56,8 @@ jobs:
           sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
       - name: Get service status
-        run: 
+        run:
+          #!/bin/bash
           remaining_attemps=10
           while (( remaining_attemps-- > 0 ))
           do
