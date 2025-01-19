@@ -4,9 +4,8 @@ services:
             - .env_test
         build:
             context: .
-            
             args:
-                - CONFIG_ENV=.env_test
+            - CONFIG_ENV=.env_test
         image: notes-app:0.1
         container_name: app
         ports:
