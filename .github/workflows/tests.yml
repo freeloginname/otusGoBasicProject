@@ -47,7 +47,7 @@ jobs:
         run: sudo apt-get install docker-compose -y
 
       - name: Start services with Docker Compose
-        run: docker compose up --build -f docker-compose-ci.yaml --force-recreate
+        run: docker compose -f docker-compose-ci.yaml up --build --force-recreate
 
       - name: Unit tests
         run: go test -race -count 100 -timeout=5m ./...
