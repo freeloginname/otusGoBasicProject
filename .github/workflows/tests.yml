@@ -55,6 +55,16 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
+      - name: Get service status
+        run: 
+          remaining_attemps=10
+          while (( remaining_attemps-- > 0 ))
+          do
+              [[ $(doSomething) == 0 ]] && exit
+              sleep 60
+          done
+          exit 1
+
       - name: Set up Docker Compose
         run: sudo apt-get install docker-compose -y
 
