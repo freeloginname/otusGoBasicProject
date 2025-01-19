@@ -23,7 +23,6 @@ jobs:
       - name: Linters
         uses: golangci/golangci-lint-action@v3
         with:
-          version: v1.53.3
           working-directory: .
 
   tests:
@@ -40,37 +39,12 @@ jobs:
 
       - name: Check out code
         uses: actions/checkout@v3
-      
-      - name: Install docker
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y ca-certificates curl gnupg
-          sudo install -m 0755 -d /etc/apt/keyrings
-          curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-          sudo chmod a+r /etc/apt/keyrings/docker.gpg
-          echo \
-            "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-            "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
-            sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-          sudo apt-get update
-          sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-
-      - name: Get service status
-        run:
-          #!/bin/bash
-          remaining_attemps=10
-          while (( remaining_attemps-- > 0 ))
-          do
-              [[ $(doSomething) == 0 ]] && exit
-              sleep 60
-          done
-          exit 1
 
       - name: Set up Docker Compose
         run: sudo apt-get install docker-compose -y
 
       - name: Start services with Docker Compose
-        run: docker-compose up --build --file docker-compose-ci.yaml --force-recreate
+        run: docker compose up --build --file docker-compose-ci.yaml --force-recreate
 
       - name: Unit tests
         run: go test -race -count 100 -timeout=5m ./...
