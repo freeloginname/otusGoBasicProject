@@ -28,6 +28,27 @@ jobs:
 
   tests:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16.2-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: storage
+        ports:
+        # will assign a random free host port
+        - 5432/tcp
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+      app:
+        image: notes-app:0.1
+        env:
+          DB_DSN: postgres://postgres:postgres@localhost:5432/storage?sslmode=disable
+        ports:
+        - 8080/tcp
+        
     steps:
       - name: Extract branch name
         run: echo "BRANCH=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
@@ -39,6 +60,9 @@ jobs:
 
       - name: Check out code
         uses: actions/checkout@v3
+
+      - name: Start services with Docker Compose
+        run: docker-compose up -d --build
 
       - name: Unit tests
         run: go test -race -count 100 -timeout=5m ./...

@@ -22,7 +22,8 @@ COPY --from=builder /build/nodes/sql/migrations ./sql/migrations
 COPY --from=builder /build/nodes/templates ./templates
 COPY --from=builder /build/nodes/static ./static
 
-ENV CONFIG_ENV=".env"
+ARG CONFIG_ENV=".env"
+ENV CONFIG_ENV=$CONFIG_ENV
 
 EXPOSE 8080
 EXPOSE 5432

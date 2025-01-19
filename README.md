@@ -1,3 +1,5 @@
+[![test status](freeloginname/otusGoBasicProject/actions/workflows/tests/badge.svg?branch=master "test status")]
+
 # Веб-приложение "Заметки"
 
 ### Описание: 

@@ -1,0 +1,13 @@
+# action.yml
+name: 'Build app'
+description: 'Build app image'
+inputs:
+  config-env:  # id of input
+    description: 'Configuration file'
+    required: true
+    default: '.env'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.config-env }}
