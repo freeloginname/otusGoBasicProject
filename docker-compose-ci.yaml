@@ -1,23 +1,21 @@
 services:
     app:
         env_file:
-            - .env_test
+            - .env
         build:
             context: .
             args:
-            - CONFIG_ENV=.env_test
+            - CONFIG_ENV=.env
         image: notes-app:0.1
         container_name: app
         ports:
             - ${APP_HTTP_PORT}:8080
-        links:
-            - pg-storage
         depends_on:
             - pg-storage
 
     pg-storage:
         env_file:
-            - .env_test
+            - .env
         image: postgres:16.2-alpine
         container_name: pg-storage
         environment:
