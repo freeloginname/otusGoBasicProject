@@ -4,9 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/freeloginname/otusGoBasicProject/pkg/notes"
 	"github.com/freeloginname/otusGoBasicProject/pkg/users"
@@ -43,6 +45,32 @@ func LoginUser() (string, error) {
 		return "", err
 	}
 	return structuredData.Token, nil
+}
+
+func retry(attempts int, sleep time.Duration) (ok int, err error) {
+	for i := 0; i < attempts; i++ {
+		if i > 0 {
+			log.Println("retrying after error:", err)
+			time.Sleep(sleep)
+			sleep *= 2
+		}
+		resp, err := http.Get("http://localhost:8080/")
+		if err == nil {
+			return resp.StatusCode, nil
+		}
+	}
+	return 0, fmt.Errorf("after %d attempts, last error: %s", attempts, err)
+}
+
+func TestConnection(t *testing.T) {
+	expected := http.StatusOK
+	result, err := retry(10, 5*time.Second)
+	if err != nil {
+		t.Errorf("expected error to be nil got %v", err)
+	}
+	if result != expected {
+		t.Errorf("expected %d got %v", expected, result)
+	}
 }
 
 func TestCreateUser(t *testing.T) {
