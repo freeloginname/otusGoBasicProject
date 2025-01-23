@@ -12,7 +12,6 @@ import (
 )
 
 func GetUser(ctx context.Context, dbc *pgxpool.Pool, name string) (notes.User, error) {
-
 	tx, err := dbc.BeginTx(ctx, pgx.TxOptions{IsoLevel: pgx.RepeatableRead})
 	if err != nil {
 		fmt.Printf("failed to start transaction: %v", err)
@@ -36,7 +35,6 @@ func GetUser(ctx context.Context, dbc *pgxpool.Pool, name string) (notes.User, e
 }
 
 func CreateUser(ctx context.Context, dbc *pgxpool.Pool, name string, password string) (string, error) {
-
 	tx, err := dbc.BeginTx(ctx, pgx.TxOptions{IsoLevel: pgx.RepeatableRead})
 	if err != nil {
 		fmt.Printf("failed to start transaction: %v", err)

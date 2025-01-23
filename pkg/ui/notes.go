@@ -7,10 +7,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Deprecated
+// Deprecated.
 func (h handler) GetNotes(c *gin.Context) {
 
-	//http.Get()
 	user, _ := c.Get("currentUser")
 
 	userName := c.Param("user_name")

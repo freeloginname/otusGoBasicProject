@@ -37,7 +37,7 @@ func (h Handler) CheckAuth(c *gin.Context) {
 		cookie, err := c.Cookie("token")
 		if err != nil {
 			c.Set("error", "Authorization header is missing or user session is not established")
-			//c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header is missing or user session is not established"})
+			// c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header is missing or user session is not established"})
 			c.Abort()
 			// c.Next()
 			// c.AbortWithStatus(http.StatusUnauthorized)

@@ -2,7 +2,6 @@ package middlewares
 
 import (
 	"fmt"
-
 	"net/http"
 	"os"
 	"strings"
@@ -14,7 +13,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-// delete me
+// delete me.
 func CheckAuth(c *gin.Context, db *pgxpool.Pool) gin.HandlerFunc {
 
 	authHeader := c.GetHeader("Authorization")

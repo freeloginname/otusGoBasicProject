@@ -5,25 +5,39 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"math/rand"
 	"net/http"
 	"strings"
 	"testing"
 	"time"
 
+	"github.com/PuerkitoBio/goquery"
 	"github.com/freeloginname/otusGoBasicProject/pkg/notes"
 	"github.com/freeloginname/otusGoBasicProject/pkg/users"
-
-	"github.com/PuerkitoBio/goquery"
 )
+
+func init() {
+	rand.Seed(time.Now().UnixNano())
+}
+
+var letters = []rune("abcdefghijklmnopqrstuvwxyz")
+
+func randSeq(n int) string {
+	b := make([]rune, n)
+	for i := range b {
+		b[i] = letters[rand.Intn(len(letters))]
+	}
+	return string(b)
+}
 
 type LoginData struct {
 	Token string `json:"token"`
 	Error string `json:"error,omitempty"`
 }
 
-func LoginUser() (string, error) {
+func LoginUser(name string) (string, error) {
 	user := users.LoginUserRequestBody{
-		Name:     "test",
+		Name:     name,
 		Password: "test",
 	}
 	body, _ := json.Marshal(user)
@@ -45,6 +59,25 @@ func LoginUser() (string, error) {
 		return "", err
 	}
 	return structuredData.Token, nil
+}
+
+func CreateUser(name string) error {
+	user := users.CreateUserRequestBody{
+		Name:     name,
+		Password: "test",
+	}
+	body, _ := json.Marshal(user)
+
+	resp, err := http.Post("http://localhost:8080/users", "application/json", strings.NewReader(string(body)))
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	// fmt.Println(string(data))
+	if resp.StatusCode != http.StatusCreated {
+		return fmt.Errorf("user not created")
+	}
+	return nil
 }
 
 func retry(attempts int, sleep time.Duration) (ok int, err error) {
@@ -74,8 +107,9 @@ func TestConnection(t *testing.T) {
 }
 
 func TestCreateUser(t *testing.T) {
+	name := randSeq(10)
 	user := users.CreateUserRequestBody{
-		Name:     "test",
+		Name:     name,
 		Password: "test",
 	}
 	body, _ := json.Marshal(user)
@@ -100,8 +134,14 @@ func TestCreateUser(t *testing.T) {
 }
 
 func TestLoginUser(t *testing.T) {
+	name := randSeq(10)
+
+	err := CreateUser(name)
+	if err != nil {
+		t.Errorf("expected error to be nil got %v", err)
+	}
 	user := users.LoginUserRequestBody{
-		Name:     "test",
+		Name:     name,
 		Password: "test",
 	}
 	body, _ := json.Marshal(user)
@@ -122,7 +162,7 @@ func TestLoginUser(t *testing.T) {
 	if err != nil {
 		t.Errorf("expected error to be nil got %v", err)
 	}
-	if len(structuredData.Token) <= 0 {
+	if len(structuredData.Token) == 0 {
 		t.Errorf("expected token not empty got %v", string(data))
 	}
 	if resp.StatusCode != http.StatusCreated {
@@ -130,7 +170,7 @@ func TestLoginUser(t *testing.T) {
 	}
 }
 
-// Тестирование обработки некорректного входу закомментировано из-за ошибки линтера на дублирование кода
+// Тестирование обработки некорректного входу закомментировано из-за ошибки линтера на дублирование кода.
 // func TestLoginUserIncorrect(t *testing.T) {
 // 	user := users.LoginUserRequestBody{
 // 		Name:     "test",
@@ -161,14 +201,21 @@ func TestLoginUser(t *testing.T) {
 // }
 
 func TestCreateNote(t *testing.T) {
-	token, err := LoginUser()
+	name := randSeq(10)
+
+	err := CreateUser(name)
 	if err != nil {
 		t.Errorf("expected error to be nil got %v", err)
 	}
+	token, err := LoginUser(name)
+	if err != nil {
+		t.Errorf("expected error to be nil got %v", err)
+	}
+	noteName := randSeq(10)
 	note := notes.CreateNoteRequestBody{
-		Name:     "test",
+		Name:     noteName,
 		Text:     "test",
-		UserName: "test",
+		UserName: name,
 	}
 	body, _ := json.Marshal(note)
 	expected := "{\"success\":\"Note Created\"}"
@@ -234,20 +281,49 @@ func TestCreateNote(t *testing.T) {
 // }
 
 func TestGetNote(t *testing.T) {
-	token, err := LoginUser()
+	name := randSeq(10)
+
+	err := CreateUser(name)
+	if err != nil {
+		t.Errorf("expected error to be nil got %v", err)
+	}
+	token, err := LoginUser(name)
 	if err != nil {
 		t.Errorf("expected error to be nil got %v", err)
 	}
 	expected := "test"
 
+	// create note
+	noteName := randSeq(10)
+	note := notes.CreateNoteRequestBody{
+		Name:     noteName,
+		Text:     "test",
+		UserName: name,
+	}
+	body, _ := json.Marshal(note)
+
 	client := &http.Client{}
-	req, err := http.NewRequest("GET", "http://localhost:8080/notes/test", nil)
+	req, err := http.NewRequest("POST", "http://localhost:8080/notes", strings.NewReader(string(body)))
 	if err != nil {
 		t.Errorf("expected error to be nil got %v", err)
 	}
 	cookie := http.Cookie{Name: "token", Value: token}
 	req.AddCookie(&cookie)
 	resp, err := client.Do(req)
+	if err != nil {
+		t.Errorf("expected error to be nil got %v", err)
+	}
+	defer resp.Body.Close()
+	// created
+
+	url := "http://localhost:8080/notes/" + noteName
+	req, err = http.NewRequest("GET", url, nil)
+	if err != nil {
+		t.Errorf("expected error to be nil got %v", err)
+	}
+	// cookie := http.Cookie{Name: "token", Value: token}
+	req.AddCookie(&cookie)
+	resp, err = client.Do(req)
 	if err != nil {
 		t.Errorf("expected error to be nil got %v", err)
 	}
@@ -260,7 +336,7 @@ func TestGetNote(t *testing.T) {
 		t.Errorf("expected error to be nil got %v", err)
 	}
 	doc.Find("#text").Each(func(i int, s *goquery.Selection) {
-		insideHTML, _ := s.Html() //underscore is an error
+		insideHTML, _ := s.Html()
 		if insideHTML != expected {
 			t.Errorf("expected %s got %v", expected, insideHTML)
 		}
@@ -269,24 +345,53 @@ func TestGetNote(t *testing.T) {
 }
 
 func TestUpdateNote(t *testing.T) {
-	token, err := LoginUser()
+	name := randSeq(10)
+
+	err := CreateUser(name)
 	if err != nil {
 		t.Errorf("expected error to be nil got %v", err)
 	}
-	note := notes.UpdateNoteRequestBody{
-		Text: "testUpdated",
+	token, err := LoginUser(name)
+	if err != nil {
+		t.Errorf("expected error to be nil got %v", err)
+	}
+
+	// create note
+	noteName := randSeq(10)
+	note := notes.CreateNoteRequestBody{
+		Name:     noteName,
+		Text:     "test",
+		UserName: name,
 	}
 	body, _ := json.Marshal(note)
-	expected := "{\"success\":\"Note Updated\"}"
 
 	client := &http.Client{}
-	req, err := http.NewRequest("PUT", "http://localhost:8080/notes/test", strings.NewReader(string(body)))
+	req, err := http.NewRequest("POST", "http://localhost:8080/notes", strings.NewReader(string(body)))
 	if err != nil {
 		t.Errorf("expected error to be nil got %v", err)
 	}
 	cookie := http.Cookie{Name: "token", Value: token}
 	req.AddCookie(&cookie)
 	resp, err := client.Do(req)
+	if err != nil {
+		t.Errorf("expected error to be nil got %v", err)
+	}
+	defer resp.Body.Close()
+	// created
+
+	updateNote := notes.UpdateNoteRequestBody{
+		Text: "testUpdated",
+	}
+	body, _ = json.Marshal(updateNote)
+	expected := "{\"success\":\"Note Updated\"}"
+
+	url := "http://localhost:8080/notes/" + noteName
+	req, err = http.NewRequest("PUT", url, strings.NewReader(string(body)))
+	if err != nil {
+		t.Errorf("expected error to be nil got %v", err)
+	}
+	req.AddCookie(&cookie)
+	resp, err = client.Do(req)
 	if err != nil {
 		t.Errorf("expected error to be nil got %v", err)
 	}
@@ -303,7 +408,9 @@ func TestUpdateNote(t *testing.T) {
 		t.Errorf("expected %d got %v", http.StatusCreated, resp.StatusCode)
 	}
 
-	req, err = http.NewRequest("GET", "http://localhost:8080/notes/test", nil)
+	// get note
+	url = "http://localhost:8080/notes/" + noteName
+	req, err = http.NewRequest("GET", url, nil)
 	if err != nil {
 		t.Errorf("expected error to be nil got %v", err)
 	}
@@ -330,20 +437,48 @@ func TestUpdateNote(t *testing.T) {
 }
 
 func TestDeleteNote(t *testing.T) {
-	token, err := LoginUser()
+	name := randSeq(10)
+
+	err := CreateUser(name)
+	if err != nil {
+		t.Errorf("expected error to be nil got %v", err)
+	}
+	token, err := LoginUser(name)
 	if err != nil {
 		t.Errorf("expected error to be nil got %v", err)
 	}
 	expected := "{\"success\":\"Note Deleted or does not exist\"}"
 
+	// create note
+	noteName := randSeq(10)
+	note := notes.CreateNoteRequestBody{
+		Name:     noteName,
+		Text:     "test",
+		UserName: name,
+	}
+	body, _ := json.Marshal(note)
+
 	client := &http.Client{}
-	req, err := http.NewRequest("DELETE", "http://localhost:8080/notes/test", nil)
+	req, err := http.NewRequest("POST", "http://localhost:8080/notes", strings.NewReader(string(body)))
 	if err != nil {
 		t.Errorf("expected error to be nil got %v", err)
 	}
 	cookie := http.Cookie{Name: "token", Value: token}
 	req.AddCookie(&cookie)
 	resp, err := client.Do(req)
+	if err != nil {
+		t.Errorf("expected error to be nil got %v", err)
+	}
+	defer resp.Body.Close()
+	// created
+
+	url := "http://localhost:8080/notes/" + noteName
+	req, err = http.NewRequest("DELETE", url, nil)
+	if err != nil {
+		t.Errorf("expected error to be nil got %v", err)
+	}
+	req.AddCookie(&cookie)
+	resp, err = client.Do(req)
 	if err != nil {
 		t.Errorf("expected error to be nil got %v", err)
 	}
