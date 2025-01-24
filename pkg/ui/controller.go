@@ -41,7 +41,8 @@ func (h handler) CheckAuth(c *gin.Context) {
 		if err != nil {
 			c.Set("error", "Authorization header is missing or user session is not established")
 			c.Abort()
-			c.HTML(http.StatusUnauthorized, "unauthorized.tmpl", gin.H{"error": "Authorization header is missing or user session is not established"})
+			c.HTML(http.StatusUnauthorized, "unauthorized.tmpl",
+				gin.H{"error": "Authorization header is missing or user session is not established"})
 			return
 		}
 		tokenString = cookie

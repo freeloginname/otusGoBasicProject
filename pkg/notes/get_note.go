@@ -40,5 +40,6 @@ func (h handler) GetNote(c *gin.Context) {
 	// }
 	// Для передачи в api:
 	/// c.JSON(http.StatusOK, &note)
-	c.HTML(http.StatusOK, "notes_get_note.tmpl", gin.H{"Note": note, "title": "Заметки пользователя", "user_name": userName, "note_name": name})
+	c.HTML(http.StatusOK, "notes_get_note.tmpl",
+		gin.H{"Note": note, "title": "Заметки пользователя", "user_name": userName, "note_name": name})
 }

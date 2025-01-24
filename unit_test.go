@@ -45,11 +45,18 @@ func LoginUser(name string) (string, error) {
 	body, _ := json.Marshal(user)
 	// expected := LoginData{Token: "token"}
 
-	resp, err := http.Post("http://localhost:8080/users/login", "application/json", strings.NewReader(string(body)))
+	client := &http.Client{}
+	req, err := http.NewRequest("POST", "http://localhost:8080/users/login", strings.NewReader(string(body)))
+	if err != nil {
+		return "", err
+	}
+	req.Header.Add("Content-Type", "application/json")
+	resp, err := client.Do(req)
 	if err != nil {
 		return "", err
 	}
 	defer resp.Body.Close()
+
 	data, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", err
@@ -70,11 +77,18 @@ func CreateUser(name string) error {
 	}
 	body, _ := json.Marshal(user)
 
-	resp, err := http.Post("http://localhost:8080/users", "application/json", strings.NewReader(string(body)))
+	client := &http.Client{}
+	req, err := http.NewRequest("POST", "http://localhost:8080/users", strings.NewReader(string(body)))
+	if err != nil {
+		return err
+	}
+	req.Header.Add("Content-Type", "application/json")
+	resp, err := client.Do(req)
 	if err != nil {
 		return err
 	}
 	defer resp.Body.Close()
+
 	// fmt.Println(string(data))
 	if resp.StatusCode != http.StatusCreated {
 		return fmt.Errorf("user not created")
@@ -89,13 +103,26 @@ func retry(attempts int, sleep time.Duration) (ok int, err error) {
 			time.Sleep(sleep)
 			sleep *= 2
 		}
-		resp, err := http.Get("http://localhost:8080/")
+
+		client := &http.Client{}
+		req, err := http.NewRequest("GET", "http://localhost:8080/", nil)
+		if err != nil {
+			continue
+		}
+		req.Header.Add("Content-Type", "application/json")
+		resp, err := client.Do(req)
 		if err == nil {
 			return resp.StatusCode, nil
 		}
-		resp.Body.Close()
+		defer resp.Body.Close()
+
+		// resp, err := http.Get("http://localhost:8080/")
+		// if err == nil {
+		// 	return resp.StatusCode, nil
+		// }
+		// resp.Body.Close()
 	}
-	return 0, fmt.Errorf("after %d attempts, last error: %s", attempts, err)
+	return 0, fmt.Errorf("after %d attempts, last error: %w", attempts, err)
 }
 
 func TestConnection(t *testing.T) {
@@ -121,11 +148,18 @@ func TestCreateUser(t *testing.T) {
 	body, _ := json.Marshal(user)
 	expected := "{\"success\":\"User Created\"}"
 
-	resp, err := http.Post("http://localhost:8080/users", "application/json", strings.NewReader(string(body)))
+	client := &http.Client{}
+	req, err := http.NewRequest("POST", "http://localhost:8080/users", strings.NewReader(string(body)))
+	if err != nil {
+		t.Errorf("expected error to be nil got %v", err)
+	}
+	req.Header.Add("Content-Type", "application/json")
+	resp, err := client.Do(req)
 	if err != nil {
 		t.Errorf("expected error to be nil got %v", err)
 	}
 	defer resp.Body.Close()
+
 	data, err := io.ReadAll(resp.Body)
 	if err != nil {
 		t.Errorf("expected error to be nil got %v", err)
@@ -156,11 +190,18 @@ func TestLoginUser(t *testing.T) {
 	body, _ := json.Marshal(user)
 	// expected := LoginData{Token: "token"}
 
-	resp, err := http.Post("http://localhost:8080/users/login", "application/json", strings.NewReader(string(body)))
+	client := &http.Client{}
+	req, err := http.NewRequest("POST", "http://localhost:8080/users/login", strings.NewReader(string(body)))
+	if err != nil {
+		t.Errorf("expected error to be nil got %v", err)
+	}
+	req.Header.Add("Content-Type", "application/json")
+	resp, err := client.Do(req)
 	if err != nil {
 		t.Errorf("expected error to be nil got %v", err)
 	}
 	defer resp.Body.Close()
+
 	data, err := io.ReadAll(resp.Body)
 	if err != nil {
 		t.Errorf("expected error to be nil got %v", err)

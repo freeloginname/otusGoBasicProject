@@ -46,7 +46,6 @@ func (h Handler) LoginUser(c *gin.Context) {
 	})
 
 	token, err := generateToken.SignedString(h.SecretKey)
-
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "failed to generate token"})
 	}

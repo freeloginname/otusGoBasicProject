@@ -27,5 +27,6 @@ func (h handler) GetNotes(c *gin.Context) {
 	// 	return
 	// }
 
-	c.HTML(http.StatusOK, "notes_get_notes.tmpl", gin.H{"Notes": notesList, "title": "Заметки пользователя", "user_name": userName})
+	c.HTML(http.StatusOK, "notes_get_notes.tmpl",
+		gin.H{"Notes": notesList, "title": "Заметки пользователя", "user_name": userName})
 }

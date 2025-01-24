@@ -15,7 +15,6 @@ import (
 
 // delete me.
 func CheckAuth(c *gin.Context, db *pgxpool.Pool) gin.HandlerFunc {
-
 	authHeader := c.GetHeader("Authorization")
 
 	if authHeader == "" {
