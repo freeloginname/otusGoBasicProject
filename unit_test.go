@@ -1,11 +1,12 @@
 package main
 
 import (
+	"crypto/rand"
 	"encoding/json"
 	"fmt"
 	"io"
 	"log"
-	"math/rand"
+	"math/big"
 	"net/http"
 	"strings"
 	"testing"
@@ -16,18 +17,19 @@ import (
 	"github.com/freeloginname/otusGoBasicProject/pkg/users"
 )
 
-func init() {
-	rand.Seed(time.Now().UnixNano())
-}
+var letters = "abcdefghijklmnopqrstuvwxyz"
 
-var letters = []rune("abcdefghijklmnopqrstuvwxyz")
-
-func randSeq(n int) string {
-	b := make([]rune, n)
-	for i := range b {
-		b[i] = letters[rand.Intn(len(letters))]
+func randSeq(n int) (string, error) {
+	ret := make([]byte, n)
+	for i := 0; i < n; i++ {
+		num, err := rand.Int(rand.Reader, big.NewInt(int64(len(letters))))
+		if err != nil {
+			return "", err
+		}
+		ret[i] = letters[num.Int64()]
 	}
-	return string(b)
+
+	return string(ret), nil
 }
 
 type LoginData struct {
@@ -91,6 +93,7 @@ func retry(attempts int, sleep time.Duration) (ok int, err error) {
 		if err == nil {
 			return resp.StatusCode, nil
 		}
+		resp.Body.Close()
 	}
 	return 0, fmt.Errorf("after %d attempts, last error: %s", attempts, err)
 }
@@ -107,7 +110,10 @@ func TestConnection(t *testing.T) {
 }
 
 func TestCreateUser(t *testing.T) {
-	name := randSeq(10)
+	name, err := randSeq(10)
+	if err != nil {
+		t.Errorf("expected error to be nil got %v", err)
+	}
 	user := users.CreateUserRequestBody{
 		Name:     name,
 		Password: "test",
@@ -134,9 +140,12 @@ func TestCreateUser(t *testing.T) {
 }
 
 func TestLoginUser(t *testing.T) {
-	name := randSeq(10)
+	name, err := randSeq(10)
+	if err != nil {
+		t.Errorf("expected error to be nil got %v", err)
+	}
 
-	err := CreateUser(name)
+	err = CreateUser(name)
 	if err != nil {
 		t.Errorf("expected error to be nil got %v", err)
 	}
@@ -201,9 +210,12 @@ func TestLoginUser(t *testing.T) {
 // }
 
 func TestCreateNote(t *testing.T) {
-	name := randSeq(10)
+	name, err := randSeq(10)
+	if err != nil {
+		t.Errorf("expected error to be nil got %v", err)
+	}
 
-	err := CreateUser(name)
+	err = CreateUser(name)
 	if err != nil {
 		t.Errorf("expected error to be nil got %v", err)
 	}
@@ -211,7 +223,10 @@ func TestCreateNote(t *testing.T) {
 	if err != nil {
 		t.Errorf("expected error to be nil got %v", err)
 	}
-	noteName := randSeq(10)
+	noteName, err := randSeq(10)
+	if err != nil {
+		t.Errorf("expected error to be nil got %v", err)
+	}
 	note := notes.CreateNoteRequestBody{
 		Name:     noteName,
 		Text:     "test",
@@ -281,9 +296,12 @@ func TestCreateNote(t *testing.T) {
 // }
 
 func TestGetNote(t *testing.T) {
-	name := randSeq(10)
+	name, err := randSeq(10)
+	if err != nil {
+		t.Errorf("expected error to be nil got %v", err)
+	}
 
-	err := CreateUser(name)
+	err = CreateUser(name)
 	if err != nil {
 		t.Errorf("expected error to be nil got %v", err)
 	}
@@ -294,7 +312,10 @@ func TestGetNote(t *testing.T) {
 	expected := "test"
 
 	// create note
-	noteName := randSeq(10)
+	noteName, err := randSeq(10)
+	if err != nil {
+		t.Errorf("expected error to be nil got %v", err)
+	}
 	note := notes.CreateNoteRequestBody{
 		Name:     noteName,
 		Text:     "test",
@@ -335,7 +356,7 @@ func TestGetNote(t *testing.T) {
 	if err != nil {
 		t.Errorf("expected error to be nil got %v", err)
 	}
-	doc.Find("#text").Each(func(i int, s *goquery.Selection) {
+	doc.Find("#text").Each(func(_ int, s *goquery.Selection) {
 		insideHTML, _ := s.Html()
 		if insideHTML != expected {
 			t.Errorf("expected %s got %v", expected, insideHTML)
@@ -345,9 +366,12 @@ func TestGetNote(t *testing.T) {
 }
 
 func TestUpdateNote(t *testing.T) {
-	name := randSeq(10)
+	name, err := randSeq(10)
+	if err != nil {
+		t.Errorf("expected error to be nil got %v", err)
+	}
 
-	err := CreateUser(name)
+	err = CreateUser(name)
 	if err != nil {
 		t.Errorf("expected error to be nil got %v", err)
 	}
@@ -357,7 +381,10 @@ func TestUpdateNote(t *testing.T) {
 	}
 
 	// create note
-	noteName := randSeq(10)
+	noteName, err := randSeq(10)
+	if err != nil {
+		t.Errorf("expected error to be nil got %v", err)
+	}
 	note := notes.CreateNoteRequestBody{
 		Name:     noteName,
 		Text:     "test",
@@ -427,19 +454,22 @@ func TestUpdateNote(t *testing.T) {
 	if err != nil {
 		t.Errorf("expected error to be nil got %v", err)
 	}
-	doc.Find("#text").Each(func(i int, s *goquery.Selection) {
-		inside_html, _ := s.Html() //underscore is an error
+	doc.Find("#text").Each(func(_ int, s *goquery.Selection) {
+		inside_html, _ := s.Html()
 		if inside_html != "testUpdated" {
 			t.Errorf("expected %s got %v", "testUpdated", inside_html)
 		}
-		fmt.Printf("Review %d: %s\n", i, inside_html)
+		fmt.Printf("Review: %s\n", inside_html)
 	})
 }
 
 func TestDeleteNote(t *testing.T) {
-	name := randSeq(10)
+	name, err := randSeq(10)
+	if err != nil {
+		t.Errorf("expected error to be nil got %v", err)
+	}
 
-	err := CreateUser(name)
+	err = CreateUser(name)
 	if err != nil {
 		t.Errorf("expected error to be nil got %v", err)
 	}
@@ -450,7 +480,10 @@ func TestDeleteNote(t *testing.T) {
 	expected := "{\"success\":\"Note Deleted or does not exist\"}"
 
 	// create note
-	noteName := randSeq(10)
+	noteName, err := randSeq(10)
+	if err != nil {
+		t.Errorf("expected error to be nil got %v", err)
+	}
 	note := notes.CreateNoteRequestBody{
 		Name:     noteName,
 		Text:     "test",

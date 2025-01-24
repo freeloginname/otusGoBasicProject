@@ -243,7 +243,6 @@ func GetNotes(ctx context.Context, dbc *pgxpool.Pool, userName string) ([]*notes
 		return []*notes.Note{}, err
 	}
 	return allNotes, nil
-
 }
 
 func GetNoteByID(ctx context.Context, dbc *pgxpool.Pool, noteID string) (*notes.Note, error) {

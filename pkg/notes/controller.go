@@ -36,7 +36,6 @@ func RegisterRoutes(r *gin.Engine, db *pgxpool.Pool, secretKey []byte) {
 }
 
 func (h handler) CheckAuth(c *gin.Context) {
-
 	authHeader := c.GetHeader("Authorization")
 	var tokenString string
 
