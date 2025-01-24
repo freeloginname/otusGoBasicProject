@@ -1,4 +1,4 @@
-[![test status](freeloginname/otusGoBasicProject/actions/workflows/tests/badge.svg?branch=master "test status")]
+[![test status](https://github.com/freeloginname/otusGoBasicProject/actions/workflows/tests/badge.svg?branch=master "test status")](https://github.com/freeloginname/otusGoBasicProject/actions)
 
 # Веб-приложение "Заметки"
 
