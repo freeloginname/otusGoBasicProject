@@ -1,0 +1,18 @@
+Main:
+  files:
+    - $all
+  allow:
+    - $gostd
+    - github.com/freeloginname/otusGoBasicProject/internal/repository/notes
+    - github.com/freeloginname/otusGoBasicProject/internal/repository/transaction
+    - github.com/freeloginname/otusGoBasicProject/pkg/users
+    - github.com/freeloginname/otusGoBasicProject/pkg/notes
+    - github.com/freeloginname/otusGoBasicProject/pkg/ui
+    - github.com/freeloginname/otusGoBasicProject/pkg/pgdb
+    - github.com/gin-gonic/gin
+    - github.com/golang-jwt/jwt
+    - github.com/jackc/pgx/v5/pgxpool
+    - github.com/jackc/pgx/v5/stdlib
+    - github.com/pressly/goose/v3
+    - github.com/spf13/viper
+    - github.com/PuerkitoBio/goquery
