@@ -110,7 +110,7 @@ func TestConnection(t *testing.T) {
 }
 
 func TestCreateUser(t *testing.T) {
-	name, err := randSeq(10)
+	name, err := randSeq(5)
 	if err != nil {
 		t.Errorf("expected error to be nil got %v", err)
 	}
@@ -455,11 +455,11 @@ func TestUpdateNote(t *testing.T) {
 		t.Errorf("expected error to be nil got %v", err)
 	}
 	doc.Find("#text").Each(func(_ int, s *goquery.Selection) {
-		inside_html, _ := s.Html()
-		if inside_html != "testUpdated" {
-			t.Errorf("expected %s got %v", "testUpdated", inside_html)
+		insideHtml, _ := s.Html()
+		if insideHtml != "testUpdated" {
+			t.Errorf("expected %s got %v", "testUpdated", insideHtml)
 		}
-		fmt.Printf("Review: %s\n", inside_html)
+		fmt.Printf("Review: %s\n", insideHtml)
 	})
 }
 

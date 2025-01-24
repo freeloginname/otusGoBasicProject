@@ -15,7 +15,6 @@ import (
 // }
 
 func (h handler) DeleteNote(c *gin.Context) {
-
 	user, _ := c.Get("currentUser")
 	userName := user.(string)
 	if userName == "" {

@@ -15,7 +15,6 @@ import (
 // }
 
 func (h handler) GetNote(c *gin.Context) {
-
 	user, _ := c.Get("currentUser")
 	userName := user.(string)
 
