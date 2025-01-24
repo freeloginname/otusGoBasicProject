@@ -455,11 +455,11 @@ func TestUpdateNote(t *testing.T) {
 		t.Errorf("expected error to be nil got %v", err)
 	}
 	doc.Find("#text").Each(func(_ int, s *goquery.Selection) {
-		insideHtml, _ := s.Html()
-		if insideHtml != "testUpdated" {
-			t.Errorf("expected %s got %v", "testUpdated", insideHtml)
+		insideHTML, _ := s.Html()
+		if insideHTML != "testUpdated" {
+			t.Errorf("expected %s got %v", "testUpdated", insideHTML)
 		}
-		fmt.Printf("Review: %s\n", insideHtml)
+		fmt.Printf("Review: %s\n", insideHTML)
 	})
 }
 

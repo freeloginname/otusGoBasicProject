@@ -9,7 +9,6 @@ import (
 
 // Deprecated.
 func (h handler) GetNotes(c *gin.Context) {
-
 	user, _ := c.Get("currentUser")
 
 	userName := c.Param("user_name")

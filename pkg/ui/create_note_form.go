@@ -7,6 +7,5 @@ import (
 )
 
 func (h handler) CreateNoteForm(c *gin.Context) {
-
 	c.HTML(http.StatusOK, "create_note_form.tmpl", gin.H{"title": "Создать заметку"})
 }
