@@ -9,6 +9,6 @@ type User struct {
 type Note struct {
 	ID     int    `json:"id,string,omitempty"`
 	Name   string `json:"name"`
-	UserID string `json:"user_id,string"`
+	UserID string `json:"userId,string"`
 	Text   string `json:"text"`
 }
