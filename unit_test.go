@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"crypto/rand"
 	"encoding/json"
 	"fmt"
@@ -434,7 +435,8 @@ func TestUpdateNote(t *testing.T) {
 	body, _ := json.Marshal(note)
 
 	client := &http.Client{}
-	req, err := http.NewRequest("POST", "http://localhost:8080/notes", strings.NewReader(string(body)))
+	ctx := context.Background()
+	req, err := http.NewRequestWithContext(ctx, "POST", "http://localhost:8080/notes", strings.NewReader(string(body)))
 	if err != nil {
 		t.Errorf("expected error to be nil got %v", err)
 	}
@@ -454,7 +456,7 @@ func TestUpdateNote(t *testing.T) {
 	expected := "{\"success\":\"Note Updated\"}"
 
 	url := "http://localhost:8080/notes/" + noteName
-	req, err = http.NewRequest("PUT", url, strings.NewReader(string(body)))
+	req, err = http.NewRequestWithContext(ctx, "PUT", url, strings.NewReader(string(body)))
 	if err != nil {
 		t.Errorf("expected error to be nil got %v", err)
 	}
@@ -546,8 +548,9 @@ func TestDeleteNote(t *testing.T) {
 	defer resp.Body.Close()
 	// created
 
+	ctx := context.Background()
 	url := "http://localhost:8080/notes/" + noteName
-	req, err = http.NewRequest("DELETE", url, nil)
+	req, err = http.NewRequestWithContext(ctx, "DELETE", url, nil)
 	if err != nil {
 		t.Errorf("expected error to be nil got %v", err)
 	}

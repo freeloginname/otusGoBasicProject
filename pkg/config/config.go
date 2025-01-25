@@ -15,7 +15,6 @@ func LoadConfig() (c Config, err error) {
 	viper.AutomaticEnv()
 
 	err = viper.ReadInConfig()
-
 	if err != nil {
 		return
 	}
