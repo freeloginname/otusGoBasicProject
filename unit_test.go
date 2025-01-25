@@ -47,7 +47,8 @@ func LoginUser(name string) (string, error) {
 	// expected := LoginData{Token: "token"}
 
 	client := &http.Client{}
-	req, err := http.NewRequest("POST", "http://localhost:8080/users/login", strings.NewReader(string(body)))
+	ctx := context.Background()
+	req, err := http.NewRequestWithContext(ctx, "POST", "http://localhost:8080/users/login", strings.NewReader(string(body)))
 	if err != nil {
 		return "", err
 	}
@@ -79,7 +80,8 @@ func CreateUser(name string) error {
 	body, _ := json.Marshal(user)
 
 	client := &http.Client{}
-	req, err := http.NewRequest("POST", "http://localhost:8080/users", strings.NewReader(string(body)))
+	ctx := context.Background()
+	req, err := http.NewRequestWithContext(ctx, "POST", "http://localhost:8080/users", strings.NewReader(string(body)))
 	if err != nil {
 		return err
 	}
@@ -106,7 +108,8 @@ func retry(attempts int, sleep time.Duration) (ok int, err error) {
 		}
 
 		client := &http.Client{}
-		req, err := http.NewRequest("GET", "http://localhost:8080/", nil)
+		ctx := context.Background()
+		req, err := http.NewRequestWithContext(ctx, "GET", "http://localhost:8080/", nil)
 		if err != nil {
 			continue
 		}
@@ -150,7 +153,8 @@ func TestCreateUser(t *testing.T) {
 	expected := "{\"success\":\"User Created\"}"
 
 	client := &http.Client{}
-	req, err := http.NewRequest("POST", "http://localhost:8080/users", strings.NewReader(string(body)))
+	ctx := context.Background()
+	req, err := http.NewRequestWithContext(ctx, "POST", "http://localhost:8080/users", strings.NewReader(string(body)))
 	if err != nil {
 		t.Errorf("expected error to be nil got %v", err)
 	}
@@ -192,7 +196,8 @@ func TestLoginUser(t *testing.T) {
 	// expected := LoginData{Token: "token"}
 
 	client := &http.Client{}
-	req, err := http.NewRequest("POST", "http://localhost:8080/users/login", strings.NewReader(string(body)))
+	ctx := context.Background()
+	req, err := http.NewRequestWithContext(ctx, "POST", "http://localhost:8080/users/login", strings.NewReader(string(body)))
 	if err != nil {
 		t.Errorf("expected error to be nil got %v", err)
 	}
@@ -278,7 +283,8 @@ func TestCreateNote(t *testing.T) {
 	expected := "{\"success\":\"Note Created\"}"
 
 	client := &http.Client{}
-	req, err := http.NewRequest("POST", "http://localhost:8080/notes", strings.NewReader(string(body)))
+	ctx := context.Background()
+	req, err := http.NewRequestWithContext(ctx, "POST", "http://localhost:8080/notes", strings.NewReader(string(body)))
 	if err != nil {
 		t.Errorf("expected error to be nil got %v", err)
 	}
@@ -366,7 +372,8 @@ func TestGetNote(t *testing.T) {
 	body, _ := json.Marshal(note)
 
 	client := &http.Client{}
-	req, err := http.NewRequest("POST", "http://localhost:8080/notes", strings.NewReader(string(body)))
+	ctx := context.Background()
+	req, err := http.NewRequestWithContext(ctx, "POST", "http://localhost:8080/notes", strings.NewReader(string(body)))
 	if err != nil {
 		t.Errorf("expected error to be nil got %v", err)
 	}
@@ -380,7 +387,7 @@ func TestGetNote(t *testing.T) {
 	// created
 
 	url := "http://localhost:8080/notes/" + noteName
-	req, err = http.NewRequest("GET", url, nil)
+	req, err = http.NewRequestWithContext(ctx, "GET", url, nil)
 	if err != nil {
 		t.Errorf("expected error to be nil got %v", err)
 	}
@@ -480,7 +487,7 @@ func TestUpdateNote(t *testing.T) {
 
 	// get note
 	url = "http://localhost:8080/notes/" + noteName
-	req, err = http.NewRequest("GET", url, nil)
+	req, err = http.NewRequestWithContext(ctx, "GET", url, nil)
 	if err != nil {
 		t.Errorf("expected error to be nil got %v", err)
 	}
@@ -535,7 +542,8 @@ func TestDeleteNote(t *testing.T) {
 	body, _ := json.Marshal(note)
 
 	client := &http.Client{}
-	req, err := http.NewRequest("POST", "http://localhost:8080/notes", strings.NewReader(string(body)))
+	ctx := context.Background()
+	req, err := http.NewRequestWithContext(ctx, "POST", "http://localhost:8080/notes", strings.NewReader(string(body)))
 	if err != nil {
 		t.Errorf("expected error to be nil got %v", err)
 	}
@@ -548,7 +556,6 @@ func TestDeleteNote(t *testing.T) {
 	defer resp.Body.Close()
 	// created
 
-	ctx := context.Background()
 	url := "http://localhost:8080/notes/" + noteName
 	req, err = http.NewRequestWithContext(ctx, "DELETE", url, nil)
 	if err != nil {
