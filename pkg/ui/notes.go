@@ -11,7 +11,7 @@ import (
 func (h handler) GetNotes(c *gin.Context) {
 	user, _ := c.Get("currentUser")
 
-	userName := c.Param("user_name")
+	userName := c.Param("userName")
 	if user != userName {
 		c.HTML(http.StatusUnauthorized, "unauthorized.tmpl", gin.H{"error": "Доступ запрещен"})
 		return
@@ -28,5 +28,5 @@ func (h handler) GetNotes(c *gin.Context) {
 	// }
 
 	c.HTML(http.StatusOK, "notes_get_notes.tmpl",
-		gin.H{"Notes": notesList, "title": "Заметки пользователя", "user_name": userName})
+		gin.H{"Notes": notesList, "title": "Заметки пользователя", "userName": userName})
 }

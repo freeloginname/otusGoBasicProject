@@ -18,7 +18,7 @@ import (
 type CreateNoteRequestBody struct {
 	Name     string `json:"name"`
 	Text     string `json:"text"`
-	UserName string `json:"user_name"`
+	UserName string `json:"userName"`
 }
 
 func (h handler) CreateNote(c *gin.Context) {
