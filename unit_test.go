@@ -48,7 +48,10 @@ func LoginUser(name string) (string, error) {
 
 	client := &http.Client{}
 	ctx := context.Background()
-	req, err := http.NewRequestWithContext(ctx, "POST", "http://localhost:8080/users/login", strings.NewReader(string(body)))
+	req, err := http.NewRequestWithContext(
+		ctx, "POST",
+		"http://localhost:8080/users/login",
+		strings.NewReader(string(body)))
 	if err != nil {
 		return "", err
 	}
@@ -197,7 +200,10 @@ func TestLoginUser(t *testing.T) {
 
 	client := &http.Client{}
 	ctx := context.Background()
-	req, err := http.NewRequestWithContext(ctx, "POST", "http://localhost:8080/users/login", strings.NewReader(string(body)))
+	req, err := http.NewRequestWithContext(
+		ctx, "POST",
+		"http://localhost:8080/users/login",
+		strings.NewReader(string(body)))
 	if err != nil {
 		t.Errorf("expected error to be nil got %v", err)
 	}
