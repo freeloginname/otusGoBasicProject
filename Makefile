@@ -2,7 +2,7 @@ ifneq ($(wildcard .env),)
 	include .env
 endif
 
-PROJECT_DIR = $(shell pwd)
+PROJECT_DIR = $(shell CURDIR)
 PROJECT_BIN = $(PROJECT_DIR)/bin
 PROJECT_TMP = $(PROJECT_DIR)/tmp
 
